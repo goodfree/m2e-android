@@ -47,6 +47,10 @@ public class JaywayMavenAndroidProject implements MavenAndroidProject {
 		String packaging = mavenProject.getPackaging().toLowerCase();
 		return ANDROID_LIBRARY_PACKAGE_TYPE.equals(packaging);
 	}
+	
+	public boolean isChildModuleProject() {
+		return mavenProject.getParentArtifact() != null;
+	}
 
 	public List<String> getProvidedDependencies() {
 	    List<String> list = new ArrayList<String>( mavenProject.getArtifacts().size() + 1 );

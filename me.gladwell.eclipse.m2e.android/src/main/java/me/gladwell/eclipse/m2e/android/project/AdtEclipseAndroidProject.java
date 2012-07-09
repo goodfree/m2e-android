@@ -10,12 +10,16 @@ package me.gladwell.eclipse.m2e.android.project;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 import me.gladwell.eclipse.m2e.android.configuration.ProjectConfigurationException;
 
+import org.apache.maven.project.MavenProject;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.m2e.core.internal.IMavenConstants;
 import org.eclipse.m2e.core.project.configurator.AbstractProjectConfigurator;
@@ -27,6 +31,7 @@ import com.android.ide.eclipse.adt.internal.sdk.Sdk;
 import com.android.io.StreamException;
 import com.android.sdklib.internal.project.ProjectProperties;
 import com.android.sdklib.internal.project.ProjectPropertiesWorkingCopy;
+import com.google.inject.Inject;
 
 public class AdtEclipseAndroidProject implements EclipseAndroidProject, AndroidProject {
 
@@ -88,11 +93,74 @@ public class AdtEclipseAndroidProject implements EclipseAndroidProject, AndroidP
 	public void setLibraryDependencies(List<EclipseAndroidProject> libraryDependencies) {
 		int i = 1;
 		for (EclipseAndroidProject library : libraryDependencies) {
-			setAndroidProperty(ProjectPropertiesWorkingCopy.PROPERTY_LIB_REF + i, "../" + library.getName());
+			
+			IPath basePath = this.getProject().getLocation();
+			IPath libPath = library.getProject().getLocation();
+			
+			String relative = convertToRelativePath(basePath.toString(), libPath.toString());
+			
+			if (library.isMavenised()){
+				//Check if module or not
+				setAndroidProperty(ProjectPropertiesWorkingCopy.PROPERTY_LIB_REF + i, relative);
+			} else {
+				setAndroidProperty(ProjectPropertiesWorkingCopy.PROPERTY_LIB_REF + i, "../" + library.getName());
+			}
 			i++;
 		}
 	}
+	
+	public static String convertToRelativePath(String absolutePath,
+			String relativeTo) {
+		StringBuilder relativePath = null;
 
+		// Thanks to:
+		// http://mrpmorris.blogspot.com/2007/05/convert-absolute-path-to-relative-path.html
+		absolutePath = absolutePath.replaceAll("\\\\", "/");
+		relativeTo = relativeTo.replaceAll("\\\\", "/");
+
+		if (absolutePath.equals(relativeTo) == true) {
+
+		} else {
+			String[] absoluteDirectories = absolutePath.split("/");
+			String[] relativeDirectories = relativeTo.split("/");
+
+			// Get the shortest of the two paths
+			int length = absoluteDirectories.length < relativeDirectories.length ? absoluteDirectories.length
+					: relativeDirectories.length;
+
+			// Use to determine where in the loop we exited
+			int lastCommonRoot = -1;
+			int index;
+
+			// Find common root
+			for (index = 0; index < length; index++) {
+				if (absoluteDirectories[index]
+						.equals(relativeDirectories[index])) {
+					lastCommonRoot = index;
+				} else {
+					break;
+					// If we didn't find a common prefix then throw
+				}
+			}
+			if (lastCommonRoot != -1) {
+				// Build up the relative path
+				relativePath = new StringBuilder();
+				// Add on the ..
+				for (index = lastCommonRoot + 1; index < absoluteDirectories.length; index++) {
+					if (absoluteDirectories[index].length() > 0) {
+						relativePath.append("../");
+					}
+				}
+				for (index = lastCommonRoot + 1; index < relativeDirectories.length - 1; index++) {
+					relativePath.append(relativeDirectories[index] + "/");
+				}
+				relativePath
+						.append(relativeDirectories[relativeDirectories.length - 1]);
+			}
+		}
+		return relativePath == null ? null : relativePath.toString();
+	}
+	
 	private void setAndroidProperty(String property, String value) {
 		try {
 			ProjectState state = getProjectState();
