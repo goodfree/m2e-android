@@ -45,21 +45,6 @@ public class LibraryAndroidMavenPluginTest extends AndroidMavenPluginTestCase {
 		libraryProject = importAndroidProject(ANDROID_LIB_PROJECT_NAME);
 	}
 
-    @Override
-    protected void tearDown() throws Exception {
-        try {
-            deleteProject(ANDROID_LIB_PROJECT_NAME);
-        } catch(Throwable t) {
-
-        } finally {
-            try {
-                super.tearDown();
-            } catch(Throwable t) {
-                t.printStackTrace();
-            }
-        }
-    }
-
 	public void testConfigure() throws Exception {
 		assertNoErrors(libraryProject);
 	}
@@ -72,26 +57,14 @@ public class LibraryAndroidMavenPluginTest extends AndroidMavenPluginTestCase {
 		IProject project = importAndroidProject("test-project-apklib-deps");
 
 		assertTrue(getProjectState(project).getFullLibraryProjects().contains(libraryProject));
-
-		try {
-		    deleteProject("test-project-apklib-deps");
-		} catch(Throwable t) {
-		    
 		}
-	}
 
 	public void testConfigureAddsErrorForNonExistentLibraryProject() throws Exception {
 		deleteProject(ANDROID_LIB_PROJECT_NAME);
 		IProject project = importAndroidProject("test-project-apklib-deps");
 
 		assertErrorMarker(project, AndroidMavenPlugin.APKLIB_ERROR_TYPE);
-
-        try {
-            deleteProject("test-project-apklib-deps");
-        } catch(Throwable t) {
-            
         }
-	}
 
 	public void testConfigureWithAClosedProjectInTheWorkspace() throws Exception {
 		
@@ -106,31 +79,14 @@ public class LibraryAndroidMavenPluginTest extends AndroidMavenPluginTestCase {
 			if (ex.getCause() instanceof ProjectConfigurationException){
 				Assert.fail("Access denied: M2E is trying to access a closed project");
 			}
-		} finally {
-		    try {
-		        deleteProject("closed-java-project");
-            } catch(Throwable t) {
-                
             }
-            try {
-                deleteProject("test-project-apklib-deps");
-            } catch(Throwable t) {
-                
-            }
-		}
 	}
 
 	public void testConfigureAddsWorkspaceLibraryProjectWithDifferentArtifactId() throws Exception {
 		IProject project = importAndroidProject("test-project-apklib-deps-diff-artifact-id");
 
 		assertTrue(getProjectState(project).getFullLibraryProjects().contains(libraryProject));
-
-		try {
-		    deleteProject("test-project-apklib-deps-diff-artifact-id");
-		} catch(Throwable t) {
-		    t.printStackTrace();
 		}
-	}
 
 	public void testConfigureClearsOldErrors() throws Exception {
 		deleteProject(ANDROID_LIB_PROJECT_NAME);
@@ -139,12 +95,6 @@ public class LibraryAndroidMavenPluginTest extends AndroidMavenPluginTestCase {
 		getProjectConfigurationManager().updateProjectConfiguration(project, monitor);
 
 		assertNoErrors(project);
-
-        try {
-            deleteProject("test-project-apklib-deps");
-        } catch(Throwable t) {
-            
-        }
 	}
 	
 	public void testConfigureDoNotAddErrorMarkerForNonMavenizedLibraryProjectPresentInWorkspace() throws Exception {
