@@ -11,25 +11,19 @@ package me.gladwell.eclipse.m2e.android.test;
 import static com.android.ide.eclipse.adt.internal.sdk.Sdk.getProjectState;
 import static org.eclipse.m2e.core.MavenPlugin.getProjectConfigurationManager;
 
-import me.gladwell.eclipse.m2e.android.AndroidMavenException;
+import java.io.File;
+import java.io.IOException;
+
+import junit.framework.Assert;
+
 import me.gladwell.eclipse.m2e.android.AndroidMavenPlugin;
 import me.gladwell.eclipse.m2e.android.configuration.ProjectConfigurationException;
 
-import org.eclipse.core.internal.resources.ResourceException;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
-
-import junit.framework.Assert;
-import java.io.File;
 
 public class LibraryAndroidMavenPluginTest extends AndroidMavenPluginTestCase {
 
@@ -42,29 +36,57 @@ public class LibraryAndroidMavenPluginTest extends AndroidMavenPluginTestCase {
 		super.setUp();
 
 		deleteProject(ANDROID_LIB_PROJECT_NAME);
-		libraryProject = importAndroidProject(ANDROID_LIB_PROJECT_NAME);
 	}
 
+    @Override
+    protected void tearDown() throws Exception {
+        try {
+            deleteProject(ANDROID_LIB_PROJECT_NAME);
+        } catch(Throwable t) {
+
+        } finally {
+            try {
+                super.tearDown();
+            } catch(Throwable t) {
+                t.printStackTrace();
+            }
+        }
+    }
+
 	public void testConfigure() throws Exception {
+		IProject libraryProject = importAndroidProject(ANDROID_LIB_PROJECT_NAME);
 		assertNoErrors(libraryProject);
 	}
 
 	public void testConfigureAppliesLibraryState() throws Exception {
+		IProject libraryProject = importAndroidProject(ANDROID_LIB_PROJECT_NAME);
 		assertTrue(getProjectState(libraryProject).isLibrary());
 	}
 
 	public void testConfigureAddsWorkspaceLibraryProjectToProjectProperties() throws Exception {
+		IProject libraryProject = importAndroidProject(ANDROID_LIB_PROJECT_NAME);
 		IProject project = importAndroidProject("test-project-apklib-deps");
 
 		assertTrue(getProjectState(project).getFullLibraryProjects().contains(libraryProject));
+
+		try {
+		    deleteProject("test-project-apklib-deps");
+		} catch(Throwable t) {
+		    
 		}
+	}
 
 	public void testConfigureAddsErrorForNonExistentLibraryProject() throws Exception {
-		deleteProject(ANDROID_LIB_PROJECT_NAME);
 		IProject project = importAndroidProject("test-project-apklib-deps");
 
 		assertErrorMarker(project, AndroidMavenPlugin.APKLIB_ERROR_TYPE);
+
+        try {
+            deleteProject("test-project-apklib-deps");
+        } catch(Throwable t) {
+            
         }
+	}
 
 	public void testConfigureWithAClosedProjectInTheWorkspace() throws Exception {
 		
@@ -79,39 +101,72 @@ public class LibraryAndroidMavenPluginTest extends AndroidMavenPluginTestCase {
 			if (ex.getCause() instanceof ProjectConfigurationException){
 				Assert.fail("Access denied: M2E is trying to access a closed project");
 			}
+		} finally {
+		    try {
+		        deleteProject("closed-java-project");
+            } catch(Throwable t) {
+                
             }
+            try {
+                deleteProject("test-project-apklib-deps");
+            } catch(Throwable t) {
+                
+            }
+		}
 	}
 
 	public void testConfigureAddsWorkspaceLibraryProjectWithDifferentArtifactId() throws Exception {
+		IProject libraryProject = importAndroidProject(ANDROID_LIB_PROJECT_NAME);
 		IProject project = importAndroidProject("test-project-apklib-deps-diff-artifact-id");
 
 		assertTrue(getProjectState(project).getFullLibraryProjects().contains(libraryProject));
+
+		try {
+		    deleteProject("test-project-apklib-deps-diff-artifact-id");
+		} catch(Throwable t) {
+		    t.printStackTrace();
 		}
+	}
 
 	public void testConfigureClearsOldErrors() throws Exception {
-		deleteProject(ANDROID_LIB_PROJECT_NAME);
 		IProject project = importAndroidProject("test-project-apklib-deps");
 		importAndroidProject(ANDROID_LIB_PROJECT_NAME);
 		getProjectConfigurationManager().updateProjectConfiguration(project, monitor);
 
 		assertNoErrors(project);
-	}
-	
-	public void testConfigureDoNotAddErrorMarkerForNonMavenizedLibraryProjectPresentInWorkspace() throws Exception {
-		
-		IProject project = importAndroidProject("test-project-non-mvn-apklib-deps");
-		
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		File src = new File("projects/non-mvn-apklib-project");
-	    File dst = new File(root.getLocation().toFile(), src.getName());
-	    copyDir(src, dst);
-		IProject nonMvnApkLibProject = root.getProject("non-mvn-apklib-project");
-		nonMvnApkLibProject.create(null);
-		nonMvnApkLibProject.open(null);
-		
-		getProjectConfigurationManager().updateProjectConfiguration(project, monitor);
-		
-		assertNoErrors(project);
+
+        try {
+            deleteProject("test-project-apklib-deps");
+        } catch(Throwable t) {
+            
+        }
 	}
 
+    public void testConfigureAddsWorkspaceLibraryInSubfdoler() throws Exception {
+        File subfolder = new File(workspace.getRoot().getLocation().toFile(), "subfolder");
+        IProject libraryProject = importAndroidProject(ANDROID_LIB_PROJECT_NAME, subfolder);
+        IProject project = importAndroidProject("test-project-apklib-deps");
+
+        assertTrue(getProjectState(project).getFullLibraryProjects().contains(libraryProject));
+
+        try {
+            deleteProject("test-project-apklib-deps");
+        } catch(Throwable t) {
+            
+        }
+    }
+
+    public void testConfigureAddsWorkspaceLibraryOutsideWorkspaceFolder() throws Exception {
+        File temp = createTempFolder();
+        IProject libraryProject = importAndroidProject(ANDROID_LIB_PROJECT_NAME, temp);
+        IProject project = importAndroidProject("test-project-apklib-deps");
+
+        assertTrue(getProjectState(project).getFullLibraryProjects().contains(libraryProject));
+
+        try {
+            deleteProject("test-project-apklib-deps");
+        } catch(Throwable t) {
+            
+        }
+    }
 }
