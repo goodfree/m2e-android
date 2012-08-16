@@ -79,7 +79,11 @@ public class JaywayMavenAndroidProject implements MavenAndroidProject {
 	public boolean matchesDependency(Dependency dependency) {
 		return StringUtils.equals(dependency.getName(), getName())
 				&& StringUtils.equals(dependency.getGroup(), mavenProject.getGroupId())
-				&& StringUtils.equals(dependency.getVersion(), mavenProject.getVersion());
+				&& matchesVersionCompatibility(dependency.getVersion(), mavenProject.getVersion());
+	}
+	
+	private boolean matchesVersionCompatibility(String versionDependency, String versionMavenProject){
+		return StringUtils.equals(versionDependency, versionMavenProject);
 	}
 
 }
