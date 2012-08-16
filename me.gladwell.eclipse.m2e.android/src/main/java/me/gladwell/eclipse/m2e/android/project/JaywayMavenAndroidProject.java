@@ -82,8 +82,26 @@ public class JaywayMavenAndroidProject implements MavenAndroidProject {
 				&& matchesVersionCompatibility(dependency.getVersion(), mavenProject.getVersion());
 	}
 	
+	/**
+	 * 1,1,1	1,1,2	2	ok
+	 * 1,1,1	1,2,1	1	ok
+	 * 1,1,1	2,0,0	0	KO
+	
+	 * 1,1		1,2		1	ok
+	 * 1,1		2		0	KO
+			
+	 * 1,1,1,1	1,1,1,2	3	ok
+	 * 1,1,1,1	1,1,2,1	2	ok
+	 * 1,1,1,1	1,2,1,1	1	ok
+	 * 1,1,1,1	2,1,1,1	0	KO
+
+	 * @param versionDependency
+	 * @param versionMavenProject
+	 * @return
+	 */
 	private boolean matchesVersionCompatibility(String versionDependency, String versionMavenProject){
-		return StringUtils.equals(versionDependency, versionMavenProject);
+		return versionDependency.charAt(0) == versionMavenProject.charAt(0);
+		//return StringUtils.equals(versionDependency, versionMavenProject);
 	}
 
 }
