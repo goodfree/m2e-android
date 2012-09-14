@@ -54,7 +54,7 @@ public abstract class AndroidMavenPluginTestCase extends AbstractMavenProjectTes
 	static final int MAXIMUM_SECONDS_TO_LOAD_ADT = 120;
 
 	protected AndroidMavenPlugin plugin;
-	protected AdtPlugin adtPlugin;
+	private AdtPlugin adtPlugin;
 
 	@Override
 	@SuppressWarnings("restriction")
@@ -66,7 +66,7 @@ public abstract class AndroidMavenPluginTestCase extends AbstractMavenProjectTes
 
 		adtPlugin = AdtPlugin.getDefault();
 	    String androidHome = System.getenv("ANDROID_HOME");
-	    
+
 	    if(androidHome != null && !androidHome.equals(getOsSdkFolder())) {
 		    adtPlugin.getPreferenceStore().setValue(AdtPrefs.PREFS_SDK_DIR, androidHome);
 		    adtPlugin.savePluginPreferences();
@@ -151,6 +151,14 @@ public abstract class AndroidMavenPluginTestCase extends AbstractMavenProjectTes
         }
 
         return projects[0];
+    }
+
+    protected void deleteAndroidProject(String name) {
+        try {
+            deleteProject(name);
+        } catch(Throwable t) {
+            t.printStackTrace();
+        }
     }
 
     protected void buildAndroidProject(IProject project, int kind) throws CoreException, InterruptedException {
