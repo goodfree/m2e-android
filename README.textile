@@ -1,51 +1,50 @@
-h1. Android Configurator
+h1. Android 配置说明
 
-The Android Configurator (*m2e-android*) is an Maven Integration for Eclipse (m2e) plug-in that adds maven support for Android Developer Tools (ADT) and the Maven Android Plugin. It brings the power of Maven dependency management into the ADT.
+android配置器(m2e-android)是一个集成eclipse(m2e)插件，增加了支持android开发者工具(Hackingadt)与mavenandroid插件。进入adt它带来了maven依赖管理的权力.
 
-For instructions on how to get started using the m2e-android please see the "project web site.":http://rgladwell.github.com/m2e-android/
+有关如何开始使用m2e-android请参阅该项目 "project web site.":http://rgladwell.github.com/m2e-android/
 
 _Copyright (c) 2009, 2010, 2011 Ricardo Gladwell, Hugo Josefson and Anthony Dannane_
 *License:* "Eclipse Public License 1.0":http://www.eclipse.org/legal
 
-h2. Hacking
 
-This section details how to set-up your environment to make code changes to the *Android Configurator* code base.
+本节详细介绍如何设置您的环境，使安卓系统配置程序代码库的代码更改.
 
-h3. 1. Getting Started
+h3. 1. 引导
 
-In addition to having Eclipse Indigo installed, you need to do the following steps:
+安装Plugin前先安装Eclipse，这里使用的是Eclipse Indigo版本, 您需要执行以下步骤:
 
-# Install the "Android SDK.":http://developer.android.com/sdk/index.html
-# Create ANDROID_HOME environment variable containing the Android SDK install path. 
-# Ensure you have the latest update on the Android SDK (execute @android update sdk --no-ui --obsolete --force@) 
-# Install latest "Android Development Tools.":http://developer.android.com/sdk/eclipse-adt.html
-# Install "Eclipse Plug-in Development Environment.":http://www.eclipse.org/pde/
-# Add "SWTBot update site":http://download.eclipse.org/technology/swtbot/helios/dev-build/update-site/ to available software sites.
-# Install "M2E Plugin 1.0.0.":http://www.eclipse.org/m2e/download/
-# Install "Maven 3":http://maven.apache.org/download.html for command line "Tycho":http://tycho.sonatype.org/ support.
-# Install "Egit":http://www.eclipse.org/egit/download/.
+# 安装 "Android SDK.":http://developer.android.com/sdk/index.html
+# 创建 ANDROID_HOME 环境变量. 
+# 确保用不用的是最新版本的 Android SDK (execute @android update sdk --no-ui --obsolete --force@) 
+# 安装最新版本 "Android Development Tools.":http://developer.android.com/sdk/eclipse-adt.html
+# 安装 "Eclipse Plug-in Development Environment.":http://www.eclipse.org/pde/
+# 添加 "SWTBot update site":http://download.eclipse.org/technology/swtbot/helios/dev-build/update-site/ 到Eclipse中.
+# 安装 "M2E Plugin 1.0.0.":http://www.eclipse.org/m2e/download/
+# 安装 "Maven 3":http://maven.apache.org/download.html 命令行 "Tycho":http://tycho.sonatype.org/ 并支持.
+# 安装 "Egit":http://www.eclipse.org/egit/download/.
 # In Eclipse select Help -> Install new software... and go to the m2eclipse update site.
 # Un-check the "Group items by category" check box.
 # You should now see the "m2e - Extensions Development Support (Optional)" plugin.
-# Select, install and restart Eclipse.
+# 安装重启Eclipse.
 
-h3. 2. Import Projects
+h3. 2. 导入项目
 
-The m2e-android project is made up of six sub-modules: the parent POM project, the core plugin, a test suite, an Android tools plugin, the feature project and an update site project.
+m2e-android项目是由六个子模块：父pom项目，核心插件，一个测试套件，android工具插件，功能项目和一个更新站点项目.
 
-To clone them into your Eclipse workspace follow these steps: 
+复制到你项目当中去: 
 
-# Clone the git repository from git://github.com/rgladwell/m2e-android.git into your local workspace.
-# In Eclipse select _File_ -> _Import..._ in the menu and then select _Maven_ -> _Existing Maven Projects_.
-# Choose the parent folder you just cloned into your workspace (should be _m2e-android_), select all sub projects and click _Finish_
-# If you get a "Plugin exception not covered by lifecycle configuration" error in your POM click "Discover new m2e connectors" which should allow you to install the Tycho configurator.
+# 克隆 git://github.com/rgladwell/m2e-android.git 到你的项目空间去.
+# 导入Elipse项目文件 -> _Import..._ in the menu and then select _Maven_ -> _Existing Maven Projects_.
+# 选择根文件夹作为项目名称 (should be _m2e-android_), 并点击Finish
+# 如果你得到一个"Plugin exception not covered by lifecycle configuration" 异常，请点击POM "Discover new m2e connectors" 重新配置.
 # Mark all new projects in the _Package Explorer_ and right-click on them to select _Team_ -> _Share Project_.
 # Select _Git_ and click _Next_.
 # Check the _Use or create Repository in parent folder of project_ and click _Finish_.
 
 h3. Further reading
 
-For more information on developing the m2e-android plug-in please see the following wiki pages:
+m2e-android插件的更多信息，请参阅下:
 
 * "Testing":https://github.com/rgladwell/m2e-android/wiki/Testing
 * "Guidelines":https://github.com/rgladwell/m2e-android/wiki/Guidelines
