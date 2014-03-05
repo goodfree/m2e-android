@@ -42,7 +42,7 @@ m2e-android项目是由六个子模块：父pom项目，核心插件，一个测
 # Select _Git_ and click _Next_.
 # Check the _Use or create Repository in parent folder of project_ and click _Finish_.
 
-h3. Further reading
+h3. 深入阅读
 
 m2e-android插件的更多信息，请参阅下:
 
